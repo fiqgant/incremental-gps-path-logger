@@ -1,0 +1,102 @@
+[
+  {
+    "lat": 3.5952,
+    "lng": 98.6722,
+    "accuracy": 10,
+    "altitude": 18,
+    "speed": 1.2,
+    "heading": 40,
+    "timestamp": "2026-05-29T10:00:00.000Z",
+    "distanceFromPrevious": 0
+  },
+  {
+    "lat": 3.59526,
+    "lng": 98.67225,
+    "accuracy": 12,
+    "altitude": 18.5,
+    "speed": 1.4,
+    "heading": 46,
+    "timestamp": "2026-05-29T10:00:04.000Z",
+    "distanceFromPrevious": 8.71
+  },
+  {
+    "lat": 3.59532,
+    "lng": 98.6723,
+    "accuracy": 9,
+    "altitude": 19,
+    "speed": 1.6,
+    "heading": 53,
+    "timestamp": "2026-05-29T10:00:08.000Z",
+    "distanceFromPrevious": 8.71
+  },
+  {
+    "lat": 3.59538,
+    "lng": 98.67236,
+    "accuracy": 11,
+    "altitude": 19.2,
+    "speed": 1.5,
+    "heading": 60,
+    "timestamp": "2026-05-29T10:00:12.000Z",
+    "distanceFromPrevious": 9.4
+  },
+  {
+    "lat": 3.59545,
+    "lng": 98.67242,
+    "accuracy": 8,
+    "altitude": 20,
+    "speed": 1.8,
+    "heading": 67,
+    "timestamp": "2026-05-29T10:00:16.000Z",
+    "distanceFromPrevious": 10.18
+  },
+  {
+    "lat": 3.59552,
+    "lng": 98.67248,
+    "accuracy": 13,
+    "altitude": 20.4,
+    "speed": 1.9,
+    "heading": 73,
+    "timestamp": "2026-05-29T10:00:20.000Z",
+    "distanceFromPrevious": 10.18
+  },
+  {
+    "lat": 3.59559,
+    "lng": 98.67255,
+    "accuracy": 10,
+    "altitude": 20.6,
+    "speed": 2,
+    "heading": 80,
+    "timestamp": "2026-05-29T10:00:24.000Z",
+    "distanceFromPrevious": 10.96
+  },
+  {
+    "lat": 3.59566,
+    "lng": 98.67262,
+    "accuracy": 9,
+    "altitude": 21.1,
+    "speed": 2.1,
+    "heading": 86,
+    "timestamp": "2026-05-29T10:00:28.000Z",
+    "distanceFromPrevious": 10.96
+  },
+  {
+    "lat": 3.59573,
+    "lng": 98.67269,
+    "accuracy": 14,
+    "altitude": 21.5,
+    "speed": 2.1,
+    "heading": 92,
+    "timestamp": "2026-05-29T10:00:32.000Z",
+    "distanceFromPrevious": 10.96
+  },
+  {
+    "lat": 3.5958,
+    "lng": 98.67276,
+    "accuracy": 12,
+    "altitude": 21.8,
+    "speed": 2.2,
+    "heading": 98,
+    "timestamp": "2026-05-29T10:00:36.000Z",
+    "distanceFromPrevious": 10.96
+  }
+]

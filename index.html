@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realtime Navigation with Incremental GPS Path Logging and Interactive Web Visualization</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="hud-shell">
+    <div id="map" aria-label="Realtime tracking map"></div>
+    <div class="hud-vignette" aria-hidden="true"></div>
+    <div class="hud-grid" aria-hidden="true"></div>
+
+    <header class="hud-panel app-header">
+      <div class="title-wrap">
+        <h1>Realtime Navigation Command Console</h1>
+        <p class="subtitle">High-precision GPS telemetry with incremental path logging and secure on-device processing.</p>
+      </div>
+      <div class="status-wrap">
+        <div id="globalStatus" class="status-pill neutral">System Status: Standby</div>
+      </div>
+      <p class="privacy-note-inline">
+        Location data is processed exclusively in your browser and stored locally via LocalStorage. For live geolocation, run on HTTPS or localhost.
+      </p>
+    </header>
+
+    <section class="hud-panel instrument-panel">
+      <h2>Driver Cluster</h2>
+      <div class="cluster-grid">
+        <div class="dial speed-dial">
+          <div class="dial-ring"></div>
+          <div class="dial-inner">
+            <span class="dial-label">Speed</span>
+            <span id="dialSpeedKmh" class="dial-value">0</span>
+            <span class="dial-unit">km/h</span>
+          </div>
+        </div>
+
+        <div class="mini-stack">
+          <div class="mini-card">
+            <span class="mini-label">Heading</span>
+            <span id="dialHeading" class="mini-value">-</span>
+          </div>
+          <div class="mini-card">
+            <span class="mini-label">Trip</span>
+            <span id="dialTrip" class="mini-value">0.000 km</span>
+          </div>
+          <div class="mini-card quality-card">
+            <span class="mini-label">GPS Quality</span>
+            <div class="quality-track">
+              <div id="dialQualityBar" class="quality-bar"></div>
+            </div>
+            <span id="dialQualityText" class="mini-value">No signal</span>
+          </div>
+        </div>
+
+        <div class="lamp-stack">
+          <div class="lamp-row"><span id="lampTracking" class="lamp"></span><span>TRACK</span></div>
+          <div class="lamp-row"><span id="lampSimulation" class="lamp"></span><span>SIM</span></div>
+          <div class="lamp-row"><span id="lampGps" class="lamp"></span><span>GPS</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hud-panel control-panel">
+      <h2>Control Grid</h2>
+      <div class="button-grid">
+        <button id="btnStart" class="btn primary">Start Tracking</button>
+        <button id="btnStop" class="btn warning">Stop Tracking</button>
+        <button id="btnReset" class="btn danger">Reset Path</button>
+        <button id="btnExport" class="btn success">Export JSON</button>
+        <button id="btnImport" class="btn secondary">Import JSON</button>
+        <button id="btnLoadSample" class="btn secondary">Load Sample</button>
+        <button id="btnSimulate" class="btn primary">Simulate GPS</button>
+        <button id="btnStopSim" class="btn warning">Stop Sim</button>
+        <button id="btnCenter" class="btn secondary">Center Map</button>
+      </div>
+      <input id="importFileInput" type="file" accept=".json,application/json" hidden />
+    </section>
+
+    <section class="hud-panel dashboard">
+      <h2>Telemetry Dashboard</h2>
+      <div class="stats-grid">
+        <div class="stat"><span class="label">Tracking Status</span><span id="statTrackingStatus" class="value">Stopped</span></div>
+        <div class="stat"><span class="label">Latest Latitude</span><span id="statLat" class="value">-</span></div>
+        <div class="stat"><span class="label">Latest Longitude</span><span id="statLng" class="value">-</span></div>
+        <div class="stat"><span class="label">Latest Accuracy</span><span id="statAccuracy" class="value">-</span></div>
+        <div class="stat"><span class="label">Altitude</span><span id="statAltitude" class="value">-</span></div>
+        <div class="stat"><span class="label">Speed</span><span id="statSpeed" class="value">-</span></div>
+        <div class="stat"><span class="label">Saved GPS Points</span><span id="statPoints" class="value">0</span></div>
+        <div class="stat"><span class="label">Total Distance (m)</span><span id="statDistanceM" class="value">0</span></div>
+        <div class="stat"><span class="label">Total Distance (km)</span><span id="statDistanceKm" class="value">0</span></div>
+        <div class="stat"><span class="label">Tracking Duration</span><span id="statDuration" class="value">00:00:00</span></div>
+        <div class="stat"><span class="label">Average Speed</span><span id="statAvgSpeed" class="value">0 km/h</span></div>
+        <div class="stat"><span class="label">Last Update</span><span id="statLastUpdate" class="value">-</span></div>
+        <div class="stat"><span class="label">Ignored Points</span><span id="statIgnoredPoints" class="value">0</span></div>
+        <div class="stat"><span class="label">Last Ignored Reason</span><span id="statIgnoredReason" class="value">-</span></div>
+      </div>
+    </section>
+
+    <section class="hud-panel activity-panel">
+      <h2>Activity Feed</h2>
+      <ul id="activityLog"></ul>
+    </section>
+  </div>
+
+  <div id="sessionSummaryModal" class="session-modal" aria-hidden="true">
+    <div class="session-modal-backdrop" id="sessionSummaryBackdrop"></div>
+    <section class="session-modal-card" role="dialog" aria-modal="true" aria-labelledby="sessionSummaryTitle">
+      <header class="session-modal-header">
+        <div>
+          <p class="session-kicker">Session Recap</p>
+          <h2 id="sessionSummaryTitle">Drive Summary</h2>
+        </div>
+        <button id="sessionSummaryCloseTop" class="session-close-btn" aria-label="Close summary">✕</button>
+      </header>
+
+      <div class="session-main-metric">
+        <span id="sessionDistanceKm" class="session-distance">0.000 km</span>
+        <span class="session-main-label">Total Distance</span>
+      </div>
+
+      <div class="session-grid">
+        <div class="session-item"><span class="k">Mode</span><span id="sessionMode" class="v">Tracking</span></div>
+        <div class="session-item"><span class="k">Duration</span><span id="sessionDuration" class="v">00:00:00</span></div>
+        <div class="session-item"><span class="k">Avg Speed</span><span id="sessionAvgSpeed" class="v">0.00 km/h</span></div>
+        <div class="session-item"><span class="k">Max Speed</span><span id="sessionMaxSpeed" class="v">0.00 km/h</span></div>
+        <div class="session-item"><span class="k">Saved Points</span><span id="sessionPoints" class="v">0</span></div>
+        <div class="session-item"><span class="k">Ignored Points</span><span id="sessionIgnored" class="v">0</span></div>
+        <div class="session-item"><span class="k">Start Time</span><span id="sessionStart" class="v">-</span></div>
+        <div class="session-item"><span class="k">End Time</span><span id="sessionEnd" class="v">-</span></div>
+      </div>
+
+      <footer class="session-modal-footer">
+        <button id="sessionSummaryCloseBtn" class="btn primary">Continue</button>
+      </footer>
+    </section>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="app.js"></script>
+</body>
+</html>
